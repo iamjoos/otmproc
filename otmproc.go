@@ -22,16 +22,21 @@ func main() {
 	otmProcesses := [][]string{}
 	otmProcess := make([]string, 11)
 
-	flag.StringVar(&cfg.username, "u", "DBA.ADMIN", "user name")
-	flag.StringVar(&cfg.userpassword, "p", "", "user password")
+	flag.StringVar(&cfg.username, "u", "DBA.ADMIN", "User name")
+	flag.StringVar(&cfg.userpassword, "p", "", "User password")
 	flag.StringVar(&cfg.url, "url", "", "URL")
 	flag.Parse()
+
+	if cfg.url == "" {
+		fmt.Println("URL is required")
+		usage()
+	}
 
 	if cfg.userpassword == "" {
 		cfg.userpassword = os.Getenv("OTMPWD")
 		if cfg.userpassword == "" {
-			fmt.Println("user password is required")
-			os.Exit(1)
+			fmt.Println("User password is required")
+			usage()
 		}
 	}
 
@@ -88,4 +93,13 @@ func main() {
 	}
 	fmt.Println("+-------------------------------------------------+--------------+-------------+")
 	fmt.Println("Total: ", len(otmProcesses))
+}
+
+func usage() {
+	fmt.Printf("Usage: otmproc [-u <username>] [-p <password>] -url <OTM URL>\n")
+	fmt.Printf("  -u <username>  - OTM user name, defaults to DBA.ADMIN\n")
+	fmt.Printf("  -p <password>  - OTM user password\n")
+	fmt.Printf("                   Password can be passed via environment variable OTMPWD\n")
+	fmt.Printf("  -url <OTM URL> - OTM URL address\n")
+	os.Exit(0)
 }
