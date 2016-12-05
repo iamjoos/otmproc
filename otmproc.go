@@ -12,32 +12,28 @@ import (
 )
 
 var (
-	username     string
-	userpassword string
-	otmUrl       string
+	otmUser     string
+	otmPassword string
+	otmURL      string
 )
 
-type otmProcess struct {
-	
-}
-
 func main() {
-	otmProcesses := [][]string{}
-	otmProcess := make([]string, 11)
+	otmProcesses := [][11]string{}
+	otmProcess := [11]string{}
 
-	flag.StringVar(&username, "u", "DBA.ADMIN", "User name")
-	flag.StringVar(&userpassword, "p", "", "User password")
-	flag.StringVar(&otmUrl, "url", "", "URL")
+	flag.StringVar(&otmUser, "u", "DBA.ADMIN", "User name")
+	flag.StringVar(&otmPassword, "p", "", "User password")
+	flag.StringVar(&otmURL, "url", "", "URL")
 	flag.Parse()
 
-	if otmUrl == "" {
+	if otmURL == "" {
 		fmt.Println("URL is required")
 		usage()
 	}
 
-	if userpassword == "" {
-		userpassword = os.Getenv("OTMPWD")
-		if userpassword == "" {
+	if otmPassword == "" {
+		otmPassword = os.Getenv("OTMPWD")
+		if otmPassword == "" {
 			fmt.Println("User password is required")
 			usage()
 		}
@@ -49,10 +45,10 @@ func main() {
 		Jar:           CookieJar,
 	}
 
-	fmt.Println("Connecting to ", otmUrl, "...")
-	response, _ := otmClient.PostForm(otmUrl+"/GC3/glog.webserver.servlet.umt.Login", url.Values{"username": {username}, "userpassword": {userpassword}})
+	fmt.Println("Connecting to ", otmURL, "...")
+	response, _ := otmClient.PostForm(otmURL+"/GC3/glog.webserver.servlet.umt.Login", url.Values{"username": {otmUser}, "userpassword": {otmPassword}})
 	fmt.Println("Getting inromation about open processes...")
-	response, _ = otmClient.Get(otmUrl + "/GC3/glog.webserver.process.walker.ProcessWalkerDiagServlet")
+	response, _ = otmClient.Get(otmURL + "/GC3/glog.webserver.process.walker.ProcessWalkerDiagServlet")
 
 	tokens := html.NewTokenizer(response.Body)
 
@@ -83,7 +79,6 @@ func main() {
 						}
 					}
 					otmProcesses = append(otmProcesses, otmProcess)
-					fmt.Println(otmProcesses[0])
 				}
 			}
 		}
@@ -93,8 +88,7 @@ func main() {
 	fmt.Println("| Description                                     | Server       | Waited      |")
 	fmt.Println("+-------------------------------------------------+--------------+-------------+")
 	for i := range otmProcesses {
-		fmt.Println(otmProcesses[i])
-		//fmt.Printf("| %-48s| %-13s| %-12s|\n", otmProcesses[i][0], otmProcesses[i][3], otmProcesses[i][5])
+		fmt.Printf("| %-48s| %-13s| %-12s|\n", otmProcesses[i][0], otmProcesses[i][3], otmProcesses[i][5])
 	}
 	fmt.Println("+-------------------------------------------------+--------------+-------------+")
 	fmt.Println("Total: ", len(otmProcesses))
