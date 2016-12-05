@@ -58,18 +58,21 @@ func main() {
 			break
 		}
 		if tokenType == html.StartTagToken {
-			// Looking for "td" tags with specific attributes
+			// Looking for "tr" tags...
 			tagName, _ := tokens.TagName()
 			if string(tagName) == "tr" {
 				_, tagAttr, _ := tokens.TagAttr()
+				// ...with specific attributes
 				if string(tagAttr) == "gridColGroupRow" {
 					prcCounter := 0
 					for {
 						innerTokenType := tokens.Next()
 						innerToken := tokens.Token()
+						// Exit loop if </tr> reached
 						if innerTokenType == html.EndTagToken && innerToken.Data == "tr" {
 							break
 						}
+						// Skip <a> tags
 						if innerTokenType == html.StartTagToken && innerToken.Data == "a" {
 							tokens.Next()
 						}
