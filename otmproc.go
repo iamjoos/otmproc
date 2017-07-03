@@ -47,7 +47,7 @@ func main() {
 
 	fmt.Println("Connecting to ", otmURL, "...")
 	response, _ := otmClient.PostForm(otmURL+"/GC3/glog.webserver.servlet.umt.Login", url.Values{"username": {otmUser}, "userpassword": {otmPassword}})
-	fmt.Println("Getting inromation about open processes...")
+	fmt.Println("Getting information about open processes...")
 	response, _ = otmClient.Get(otmURL + "/GC3/glog.webserver.process.walker.ProcessWalkerDiagServlet")
 
 	tokens := html.NewTokenizer(response.Body)
